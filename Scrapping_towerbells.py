@@ -179,17 +179,17 @@ def get_fields_past_carillonist(contract_part):
 # Section Contact
 def get_fields_contact(contract_part):
     dic = {}
-    contact_match = re.search(r'Contact:\s+(.+?)\s+\(A\)', contract_part)
-    if contact_match:
-        contact_name = contact_match.group(1)
-        dic['Contact'] = contact_name
-    phone_matches = re.search(r'T: (\(\d{3}\)\d{3}-?\d{4})', contract_part)
-    lines = contract_part.strip().split('\n')
-    dic['Contact_Address'] = lines[1].strip()+lines[2].strip()
-    if phone_matches:
-        phone = phone_matches.group(1)
-        dic['Contract_Telephone:'] = phone
+    line = contract_part.strip().split('\n')
+    if not line[0] and not line[1] and not line[2] and not line[3]:
+        dic['Contact'] = 'N/A'
+        dic['Contact_Address'] = 'N/A'
+        dic['Contract_Telephone:'] = 'N/A'
+    else:
+        dic['Contact'] = line[1].strip()
+        dic['Contact_Address'] = line[1].strip()+line[2].strip()
+        dic['Contract_Telephone:'] = line[3].strip()
     return dic
+
 
 # Section Schedule
 
