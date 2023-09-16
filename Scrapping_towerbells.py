@@ -157,17 +157,16 @@ def get_fields_contact(contract_part):
     if contact_match:
         contact_name = contact_match.group(1)
         dic['Contact'] = contact_name
-    address_matches = re.search(r'\(A\)([\s\S]*?)T:', contract_part)
-    if address_matches:
-        address = address_matches.group(1).strip().replace('\n', ', ').replace('   ', ' ')
-        dic['Contact_Address'] = address
     phone_matches = re.search(r'T: (\(\d{3}\)\d{3}-?\d{4})', contract_part)
+    lines = contract_part.strip().split('\n')
+    dic['Contact_Address'] = lines[1].strip()+lines[2].strip()
     if phone_matches:
         phone = phone_matches.group(1)
         dic['Contract_Telephone:'] = phone
     return dic
 
 # Section Schedule
+
 
 # Section Remarks
 def get_fields_remarks(text):
