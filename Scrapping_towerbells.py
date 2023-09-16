@@ -8,7 +8,8 @@ TODOs:
 3. store the data in a CSV
 4. (optionally) store each scraped page
 """
-
+import re
+import datetime
 from bs4 import BeautifulSoup
 from dataclasses import dataclass
 
@@ -146,21 +147,63 @@ def get_fields_section_name(section_text):
 
 # Section Technical data
 def get_fields_technical_data(text):
-    return {
+    result = {}
+    
+    # Extracting the number of bells
+    match = re.search(r"Traditional carillon of (\d+) bells", text)
+    if match:
+        result['Number of Bells'] = int(match.group(1))
+    
+    # Extracting the pitch of the heaviest bell
+    match = re.search(r"Pitch of heaviest bell is (.+) in", text)
+    if match:
+        result['Pitch of Heaviest Bell'] = match.group(1).strip()
+    
+    # Extracting transposition
+    match = re.search(r"Transposition is up  (\d+) semitone\(s\)", text)
+    if match:
+        result['Transposition (semitones)'] = int(match.group(1))
         
-    }
+    # Extracting keyboard range
+    match = re.search(r"Keyboard range:     (.+)  /    (.+)", text)
+    if match:
+        result['Keyboard Range'] = {
+            'Low': match.group(1).strip(),
+            'High': match.group(2).strip()
+        }
+    # Extracting year of latest technical info
+    match = re.search(r"Year of latest technical information source is (\d+)", text)
+    if match:
+        result['Year of Latest Technical Info'] = int(match.group(1))
+    # Additional data like missing bass semitone, practice console, etc. can also be extracted similarly.
+    return result
 
 # Section Links
 def get_fields_links(text):
-    return {
-
-    }
+    result = {}
+    return result
 
 # Section Status
 def get_fields_status(text):
-    return {
+    result = {}
+    # Extracting the date when the page was built
+    match = re.search(r"This page was built from the database on  (\d+-\w+-\d+)", text)
+    if match:
+        date_str = match.group(1)
+        result['Page Built Date'] = datetime.strptime(date_str, "%d-%b-%y").date()
 
-    }
+    # Extracting the date when the textual data was last updated
+    match = re.search(r"based on textual data last updated on (\d+/\d+/\d+)", text)
+    if match:
+        date_str = match.group(1)
+        result['Textual Data Last Updated'] = datetime.strptime(date_str, "%Y/%m/%d").date()
+
+    # Extracting the date when the technical data was last updated
+    match = re.search(r"and on technical data last updated on (\d+/\d+/\d+)", text)
+    if match:
+        date_str = match.group(1)
+        result['Technical Data Last Updated'] = datetime.strptime(date_str, "%Y/%m/%d").date()
+    return result
 
 if __name__ == '__main__':
     entrypoint = "http://towerbells.org/data/IXNATRnr.html"
