@@ -130,6 +130,37 @@ def get_fields_section_name(section_text):
         'field2': 'value2'
     }
 
+# To do
+
+# Section Location
+
+# Section Carillonist
+
+# Section Past carillonist
+
+# Section Contact
+
+# Section Schedule
+
+# Section Remarks
+
+# Section Technical data
+def get_fields_technical_data(text):
+    return {
+        
+    }
+
+# Section Links
+def get_fields_links(text):
+    return {
+
+    }
+
+# Section Status
+def get_fields_status(text):
+    return {
+
+    }
 
 if __name__ == '__main__':
     entrypoint = "http://towerbells.org/data/IXNATRnr.html"
