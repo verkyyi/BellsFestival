@@ -98,9 +98,6 @@ def parse_data_page(
 
     return sections
 
-
-
-
 def main(entrypoint: str,) -> None:
     content = fetch_page(entrypoint)
     link_queue = get_links(content)
@@ -128,11 +125,13 @@ def main(entrypoint: str,) -> None:
         print(a_row)
     # convert rows to csv and save it using csv library
     with open('towerbells.csv', 'w', newline='') as csvfile:
-        fieldnames = rows[0].keys()
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        all_keys = set()
+        for row in rows:
+            all_keys.update(row.keys())
+        writer = csv.DictWriter(csvfile, fieldnames=all_keys)
         writer.writeheader()
         for row in rows:
-            row_with_defaults = {field: row.get(field, 'DEFAULT') for field in fieldnames}
+            row_with_defaults = {field: row.get(field, '') for field in all_keys}
             writer.writerow(row_with_defaults)
 
 # TODO: Sample of a function to get fields from a section
