@@ -11,6 +11,7 @@ TODOs:
 
 from bs4 import BeautifulSoup
 from dataclasses import dataclass
+import pandas as pd
 
 import requests
 
@@ -96,12 +97,22 @@ def parse_data_page(
 
     return sections
 
+def get_contact(contract_part):
+    dic = {}
+    address_matches = re.search(r'(?<=\()(A)(?=\))([\s\S]*?)T:', contract_part)
+    if address_matches:
+        address = address_matches.group(2).strip().replace('\n', ', ').replace('   ', ' ')
+        dic['Address'] = address
+    phone_matches = re.search(r'T: (\(\d{3}\)\d{3}-?\d{4})', contract_part)
+    if phone_matches:
+        phone = phone_matches.group(1)
+        dic['Telephone:'] = phone
+    return dic
 
-def main(
-        entrypoint: str,
-) -> None:
+
+
+def main(entrypoint: str,) -> None:
     content = fetch_page(entrypoint)
-
     link_queue = get_links(content)
     for link in link_queue:
         content = fetch_page(link.href)
@@ -110,6 +121,8 @@ def main(
             print(section)
             print('-'*30)
         break
+
+
 
 if __name__ == '__main__':
     entrypoint = "http://towerbells.org/data/IXNATRnr.html"
