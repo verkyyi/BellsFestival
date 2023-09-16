@@ -158,7 +158,10 @@ def get_fields_location(text):
     # Convert the upper part to a list of lines and exclude the first line
     upper_lines = upper_part.strip().splitlines()[1:]
     # Save the modified upper part as 'Full_Info'
-    dic['Location'] = "\n".join(upper_lines).strip()
+    dic['Country']= upper_lines[-1].split(', ')[-1]
+    dic['State']= upper_lines[-1].split(', ')[-2]
+    dic['City']= upper_lines[-1].split(', ')[-3]
+    dic['Location'] = " ".join(upper_lines).strip()
     pattern = r'LL:\s*(\w \d+\.\d+),\s*(\w \d+\.\d+)'
     match = re.search(pattern, lat_long_part)
     # Check if a match was found
