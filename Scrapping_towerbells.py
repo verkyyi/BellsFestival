@@ -27,7 +27,7 @@ def fetch_page(
     response = requests.get(url)
 
     if response.status_code < 300 and response.status_code >= 200:
-        return BeautifulSoup(response._content)
+        return BeautifulSoup(response._content,features="html.parser")
     else:
         print(f"URL could not be fetched: {url}")
         return None
@@ -103,18 +103,14 @@ def main(
     content = fetch_page(entrypoint)
 
     link_queue = get_links(content)
-
     for link in link_queue:
         content = fetch_page(link.href)
         sections = parse_data_page(content)
-        
         for section in sections:
             print(section)
             print('-'*30)
-        
         break
 
 if __name__ == '__main__':
     entrypoint = "http://towerbells.org/data/IXNATRnr.html"
-
     main(entrypoint)
