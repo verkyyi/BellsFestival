@@ -99,9 +99,9 @@ def parse_data_page(
     return sections
 
 
-def main(
-        entrypoint: str,
-) -> None:
+
+
+def main(entrypoint: str,) -> None:
     content = fetch_page(entrypoint)
     link_queue = get_links(content)
     rows = []
@@ -152,10 +152,28 @@ def get_fields_section_name(section_text):
 # Section Past carillonist
 
 # Section Contact
+def get_fields_contact(contract_part):
+    dic = {}
+    address_matches = re.search(r'(?<=\()(A)(?=\))([\s\S]*?)T:', contract_part)
+    if address_matches:
+        address = address_matches.group(2).strip().replace('\n', ', ').replace('   ', ' ')
+        dic['Address'] = address
+    phone_matches = re.search(r'T: (\(\d{3}\)\d{3}-?\d{4})', contract_part)
+    if phone_matches:
+        phone = phone_matches.group(1)
+        dic['Telephone:'] = phone
+    return dic
 
 # Section Schedule
 
 # Section Remarks
+def get_fields_remarks(text):
+    result = {}
+    # Extracting the date when the page was built
+    match = re.search(r"Remarks: (.+)", text)
+    if match:
+        result['Remarks'] = match.group(1)
+    return result
 
 # Section Technical data
 def get_fields_technical_data(text):
@@ -219,6 +237,8 @@ def get_fields_status(text):
         date_str = match.group(1)
         result['Technical Data Last Updated'] = datetime.strptime(date_str, "%Y/%m/%d").date()
     return result
+
+
 
 if __name__ == '__main__':
     entrypoint = "http://towerbells.org/data/IXNATRnr.html"
