@@ -117,7 +117,10 @@ def main(entrypoint: str,) -> None:
                 # before calling function, check if function exists
                 if function_name in globals():
                     # call function to get fields dictionary
-                    fields = globals()[function_name](section)
+                    try:
+                        fields = globals()[function_name](section)
+                    except:
+                        fields = {}
                     # merge fields dictionary with a_row
                     a_row = {**a_row, **fields}
         # appending a_row to rows
