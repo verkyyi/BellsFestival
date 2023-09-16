@@ -101,15 +101,35 @@ def main(
         entrypoint: str,
 ) -> None:
     content = fetch_page(entrypoint)
-
     link_queue = get_links(content)
+    rows = []
     for link in link_queue:
         content = fetch_page(link.href)
         sections = parse_data_page(content)
+        a_row = {}
         for section in sections:
-            print(section)
-            print('-'*30)
-        break
+            if(len(section)>0):
+                # get section name from first line starting with *
+                section_name = section.splitlines()[0].strip('*').split(':')[0]
+                # lower case and replace spaces with underscore
+                section_name = section_name.lower().replace(' ','_')
+                # based on section name use differenct function to get fields using switch case
+                function_name = 'get_fields_' + section_name
+                # call function to get fields dictionary
+                fields = globals()[function_name](section)
+                # merge fields dictionary with a_row
+                a_row = {**a_row, **fields}
+        # appending a_row to rows
+        rows.append(a_row)
+
+# TODO: Sample of a function to get fields from a section
+# 1. section name should be lower case and replace spaces with underscore
+def get_fields_section_name(section_text):
+    return {
+        'field1': 'value1',
+        'field2': 'value2'
+    }
+
 
 if __name__ == '__main__':
     entrypoint = "http://towerbells.org/data/IXNATRnr.html"
