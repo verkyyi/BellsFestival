@@ -8,7 +8,8 @@ TODOs:
 3. store the data in a CSV
 4. (optionally) store each scraped page
 """
-
+import re
+import datetime
 from bs4 import BeautifulSoup
 from dataclasses import dataclass
 import pandas as pd
@@ -115,13 +116,107 @@ def get_contact(contract_part):
 def main(entrypoint: str,) -> None:
     content = fetch_page(entrypoint)
     link_queue = get_links(content)
+    rows = []
     for link in link_queue:
         content = fetch_page(link.href)
         sections = parse_data_page(content)
+        a_row = {}
         for section in sections:
-            print(section)
-            print('-'*30)
-        break
+            if(len(section)>0):
+                # get section name from first line starting with *
+                section_name = section.splitlines()[0].strip('*').split(':')[0]
+                # lower case and replace spaces with underscore
+                section_name = section_name.lower().replace(' ','_')
+                # based on section name use differenct function to get fields using switch case
+                function_name = 'get_fields_' + section_name
+                # call function to get fields dictionary
+                fields = globals()[function_name](section)
+                # merge fields dictionary with a_row
+                a_row = {**a_row, **fields}
+        # appending a_row to rows
+        rows.append(a_row)
+
+# TODO: Sample of a function to get fields from a section
+# 1. section name should be lower case and replace spaces with underscore
+def get_fields_section_name(section_text):
+    return {
+        'field1': 'value1',
+        'field2': 'value2'
+    }
+
+# To do
+
+# Section Location
+
+# Section Carillonist
+
+# Section Past carillonist
+
+# Section Contact
+
+# Section Schedule
+
+# Section Remarks
+
+# Section Technical data
+def get_fields_technical_data(text):
+    result = {}
+    
+    # Extracting the number of bells
+    match = re.search(r"Traditional carillon of (\d+) bells", text)
+    if match:
+        result['Number of Bells'] = int(match.group(1))
+    
+    # Extracting the pitch of the heaviest bell
+    match = re.search(r"Pitch of heaviest bell is (.+) in", text)
+    if match:
+        result['Pitch of Heaviest Bell'] = match.group(1).strip()
+    
+    # Extracting transposition
+    match = re.search(r"Transposition is up  (\d+) semitone\(s\)", text)
+    if match:
+        result['Transposition (semitones)'] = int(match.group(1))
+        
+    # Extracting keyboard range
+    match = re.search(r"Keyboard range:     (.+)  /    (.+)", text)
+    if match:
+        result['Keyboard Range'] = {
+            'Low': match.group(1).strip(),
+            'High': match.group(2).strip()
+        }
+    # Extracting year of latest technical info
+    match = re.search(r"Year of latest technical information source is (\d+)", text)
+    if match:
+        result['Year of Latest Technical Info'] = int(match.group(1))
+    # Additional data like missing bass semitone, practice console, etc. can also be extracted similarly.
+    return result
+
+# Section Links
+def get_fields_links(text):
+    result = {}
+    return result
+
+# Section Status
+def get_fields_status(text):
+    result = {}
+    # Extracting the date when the page was built
+    match = re.search(r"This page was built from the database on  (\d+-\w+-\d+)", text)
+    if match:
+        date_str = match.group(1)
+        result['Page Built Date'] = datetime.strptime(date_str, "%d-%b-%y").date()
+
+    # Extracting the date when the textual data was last updated
+    match = re.search(r"based on textual data last updated on (\d+/\d+/\d+)", text)
+    if match:
+        date_str = match.group(1)
+        result['Textual Data Last Updated'] = datetime.strptime(date_str, "%Y/%m/%d").date()
+
+    # Extracting the date when the technical data was last updated
+    match = re.search(r"and on technical data last updated on (\d+/\d+/\d+)", text)
+    if match:
+        date_str = match.group(1)
+        result['Technical Data Last Updated'] = datetime.strptime(date_str, "%Y/%m/%d").date()
+    return result
 
 
 
