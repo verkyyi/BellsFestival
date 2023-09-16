@@ -35,7 +35,7 @@ def func():
 
 
 # Define a regular expression pattern to match latitude and longitude
-pattern = r'LL:\s*N (\d+\.\d+),\s*W (\d+\.\d+)'
+pattern = r'LL:\s*(\w \d+\.\d+),\s*(\w \d+\.\d+)'
 
 # Use re.search to find the pattern in the text
 match = re.search(pattern, s)

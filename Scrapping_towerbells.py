@@ -145,10 +145,36 @@ def get_fields_section_name(section_text):
 # To do
 
 # Section Location
+def get_fileds_location(text):
+    dic = {}
+    # Use re.search to find the pattern in the text
+    # Define a regular expression pattern to match latitude and longitude
+    pattern = r'LL:\s*(\w \d+\.\d+),\s*(\w \d+\.\d+)'
+    match = re.search(pattern, s)
+    # Check if a match was found
+    if match:
+        # Extract and print latitude and longitude
+        dic['latitude'] = match.group(1)
+        dic['longitude'] = match.group(2)
+    return dic
 
 # Section Carillonist
-
+def get_fields_carillonist(contract_part):
+    dic = {}
+    carillonist_match = re.search(r'Carillonist:\s+(.+?)\s+\(A\)', contract_part)
+    if carillonist_match:
+        carillonist_name = carillonist_match.group(1)
+        dic['Carillonist'] = carillonist_name
+    return dic
 # Section Past carillonist
+
+def get_fields_past_carillonist(contract_part):
+    dic = {}
+    past_carillonist_match = re.search(r'Past carillonist:\s+(.+?)\s+\(A\)', contract_part)
+    if past_carillonist_match:
+        past_carillonist_name = past_carillonist_match.group(1)
+        dic['Past Carillonist'] = past_carillonist_name
+    return dic
 
 # Section Contact
 def get_fields_contact(contract_part):
