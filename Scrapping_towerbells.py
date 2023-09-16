@@ -150,8 +150,14 @@ def get_fields_location(text):
     dic = {}
     # Use re.search to find the pattern in the text
     # Define a regular expression pattern to match latitude and longitude
+    # Split text into two parts using "LL:" as a separator
+    upper_part, lat_long_part = text.strip().split("LL:", 1)
+    # Convert the upper part to a list of lines and exclude the first line
+    upper_lines = upper_part.strip().splitlines()[1:]
+    # Save the modified upper part as 'Full_Info'
+    dic['Location'] = "\n".join(upper_lines).strip()
     pattern = r'LL:\s*(\w \d+\.\d+),\s*(\w \d+\.\d+)'
-    match = re.search(pattern, text)
+    match = re.search(pattern, lat_long_part)
     # Check if a match was found
     if match:
         # Extract and print latitude and longitude
