@@ -142,7 +142,7 @@ def get_fields_section_name(section_text):
 # Section Past carillonist
 
 # Section Contact
-def get_contact(contract_part):
+def get_fields_contact(contract_part):
     dic = {}
     address_matches = re.search(r'(?<=\()(A)(?=\))([\s\S]*?)T:', contract_part)
     if address_matches:
@@ -153,9 +153,17 @@ def get_contact(contract_part):
         phone = phone_matches.group(1)
         dic['Telephone:'] = phone
     return dic
+
 # Section Schedule
 
 # Section Remarks
+def get_fields_remarks(text):
+    result = {}
+    # Extracting the date when the page was built
+    match = re.search(r"Remarks: (.+)", text)
+    if match:
+        result['Remarks'] = match.group(1)
+    return result
 
 # Section Technical data
 def get_fields_technical_data(text):
