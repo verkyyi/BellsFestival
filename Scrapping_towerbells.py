@@ -9,10 +9,10 @@ TODOs:
 4. (optionally) store each scraped page
 """
 import re
-import datetime
 from bs4 import BeautifulSoup
 from dataclasses import dataclass
-
+from datetime import datetime
+import csv
 import requests
 
 
@@ -75,7 +75,8 @@ def parse_data_page(
         if paragraph.text.strip().startswith("*"):
             text = paragraph.text
             break
-
+    if 'text' not in locals() and 'text' not in globals():
+        return []
     start_index = text.find("Site locator map")
     end_index = text.find("*", start_index)
     text = text[:start_index] + text[end_index:]
@@ -116,12 +117,23 @@ def main(
                 section_name = section_name.lower().replace(' ','_')
                 # based on section name use differenct function to get fields using switch case
                 function_name = 'get_fields_' + section_name
-                # call function to get fields dictionary
-                fields = globals()[function_name](section)
-                # merge fields dictionary with a_row
-                a_row = {**a_row, **fields}
+                # before calling function, check if function exists
+                if function_name in globals():
+                    # call function to get fields dictionary
+                    fields = globals()[function_name](section)
+                    # merge fields dictionary with a_row
+                    a_row = {**a_row, **fields}
         # appending a_row to rows
         rows.append(a_row)
+        print(a_row)
+    # convert rows to csv and save it using csv library
+    with open('towerbells.csv', 'w', newline='') as csvfile:
+        fieldnames = rows[0].keys()
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            row_with_defaults = {field: row.get(field, 'DEFAULT') for field in fieldnames}
+            writer.writerow(row_with_defaults)
 
 # TODO: Sample of a function to get fields from a section
 # 1. section name should be lower case and replace spaces with underscore
@@ -196,7 +208,10 @@ def get_fields_status(text):
     match = re.search(r"based on textual data last updated on (\d+/\d+/\d+)", text)
     if match:
         date_str = match.group(1)
-        result['Textual Data Last Updated'] = datetime.strptime(date_str, "%Y/%m/%d").date()
+        try:
+            result['Textual Data Last Updated'] = datetime.strptime(date_str, "%Y/%m/%d").date()
+        except:
+            result['Textual Data Last Updated'] = None
 
     # Extracting the date when the technical data was last updated
     match = re.search(r"and on technical data last updated on (\d+/\d+/\d+)", text)
