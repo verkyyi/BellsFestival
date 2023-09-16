@@ -28,7 +28,7 @@ def fetch_page(
     response = requests.get(url)
 
     if response.status_code < 300 and response.status_code >= 200:
-        return BeautifulSoup(response._content,features="html.parser",features="html.parser")
+        return BeautifulSoup(response._content,features="html.parser")
     else:
         print(f"URL could not be fetched: {url}")
         return None
