@@ -150,7 +150,7 @@ def get_fileds_location(text):
     # Use re.search to find the pattern in the text
     # Define a regular expression pattern to match latitude and longitude
     pattern = r'LL:\s*(\w \d+\.\d+),\s*(\w \d+\.\d+)'
-    match = re.search(pattern, s)
+    match = re.search(pattern, text)
     # Check if a match was found
     if match:
         # Extract and print latitude and longitude
