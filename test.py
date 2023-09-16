@@ -24,7 +24,10 @@ lines = s.splitlines()
 for i,line in enumerate(lines):
     if line[-3:]=="USA": 
         print("address here")
-        print(''.join(lines[:i]))
+        adress=''.join(lines[:i])
+        print(adress)
+
+   
 
 
 # Define a regular expression pattern to match latitude and longitude
