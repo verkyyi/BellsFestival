@@ -128,6 +128,7 @@ def main(entrypoint: str,) -> None:
         all_keys = set()
         for row in rows:
             all_keys.update(row.keys())
+        all_keys = sorted(all_keys)
         writer = csv.DictWriter(csvfile, fieldnames=all_keys)
         writer.writeheader()
         for row in rows:
