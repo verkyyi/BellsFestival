@@ -117,7 +117,10 @@ def main(entrypoint: str,) -> None:
                 # before calling function, check if function exists
                 if function_name in globals():
                     # call function to get fields dictionary
-                    fields = globals()[function_name](section)
+                    try:
+                        fields = globals()[function_name](section)
+                    except:
+                        fields = {}
                     # merge fields dictionary with a_row
                     a_row = {**a_row, **fields}
         # appending a_row to rows
@@ -128,6 +131,7 @@ def main(entrypoint: str,) -> None:
         all_keys = set()
         for row in rows:
             all_keys.update(row.keys())
+        all_keys = sorted(all_keys)
         writer = csv.DictWriter(csvfile, fieldnames=all_keys)
         writer.writeheader()
         for row in rows:
@@ -145,12 +149,21 @@ def get_fields_section_name(section_text):
 # To do
 
 # Section Location
-def get_fileds_location(text):
+def get_fields_location(text):
     dic = {}
     # Use re.search to find the pattern in the text
     # Define a regular expression pattern to match latitude and longitude
+    # Split text into two parts using "LL:" as a separator
+    upper_part, lat_long_part = text.strip().split("LL:", 1)
+    # Convert the upper part to a list of lines and exclude the first line
+    upper_lines = upper_part.strip().splitlines()[1:]
+    # Save the modified upper part as 'Full_Info'
+    dic['Country']= upper_lines[-1].split(', ')[-1]
+    dic['State']= upper_lines[-1].split(', ')[-2]
+    dic['City']= upper_lines[-1].split(', ')[-3]
+    dic['Location'] = " ".join(upper_lines).strip()
     pattern = r'LL:\s*(\w \d+\.\d+),\s*(\w \d+\.\d+)'
-    match = re.search(pattern, text)
+    match = re.search(pattern, lat_long_part)
     # Check if a match was found
     if match:
         # Extract and print latitude and longitude
