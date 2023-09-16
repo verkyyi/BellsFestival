@@ -145,7 +145,7 @@ def get_fields_section_name(section_text):
 # To do
 
 # Section Location
-def get_fileds_location(text):
+def get_fields_location(text):
     dic = {}
     # Use re.search to find the pattern in the text
     # Define a regular expression pattern to match latitude and longitude
