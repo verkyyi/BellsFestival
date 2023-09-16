@@ -23,7 +23,9 @@ s='''
 lines = s.splitlines()
 for i,line in enumerate(lines):
     if line[-3:]=="USA": 
-        print("address here")
+        print("address here1")
+        print(lines[:i])
+        print("address here2")
         adress=''.join(lines[:i])
         print(adress)
 
