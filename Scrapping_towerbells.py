@@ -144,9 +144,13 @@ def get_fields_section_name(section_text):
 # Section Contact
 def get_fields_contact(contract_part):
     dic = {}
-    address_matches = re.search(r'(?<=\()(A)(?=\))([\s\S]*?)T:', contract_part)
+    contact_match = re.search(r'Contact:\s+(.+?)\s+\(A\)', contract_part)
+    if contact_match:
+        contact_name = contact_match.group(1)
+        dic['Contact'] = contact_name
+    address_matches = re.search(r'\(A\)([\s\S]*?)T:', contract_part)
     if address_matches:
-        address = address_matches.group(2).strip().replace('\n', ', ').replace('   ', ' ')
+        address = address_matches.group(1).strip().replace('\n', ', ').replace('   ', ' ')
         dic['Address'] = address
     phone_matches = re.search(r'T: (\(\d{3}\)\d{3}-?\d{4})', contract_part)
     if phone_matches:
